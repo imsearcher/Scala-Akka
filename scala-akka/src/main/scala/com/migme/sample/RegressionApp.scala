@@ -27,11 +27,8 @@ object RegressionApp {
       workers(i) = sys.actorOf(Props[Worker], name = s"Worker-${i}")
     }
 
-    for (i <- 1 to 1) {
+    manager ! Calculation(workers, x, y, thetas);
 
-      manager ! Calculation(workers, x, y, thetas);
-
-    }
     Thread sleep 1000
     sys.terminate()
 
