@@ -25,7 +25,6 @@ class Worker extends Actor {
         }
 
       }
-      //sums.foreach { x => println(x) }
       sender ! Summation(sums)
   }
 }
