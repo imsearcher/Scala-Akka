@@ -11,6 +11,7 @@ import akka.actor.ActorRef
 import akka.routing.RoundRobinPool
 import akka.actor.SupervisorStrategy
 import akka.actor.OneForOneStrategy
+import akka.actor.ActorSelection
 
 class Master()
     extends Actor {
@@ -22,18 +23,20 @@ class Master()
   var counter = 0
   var x: List[Vector[Double]] = List();
   var y: List[Double] = List();
-  var workers = new Array[ActorRef](0)
+  var workers = new Array[ActorSelection](4)
+  for (i <- 0 to (workers.size - 1)) {
+    val worker = context.actorSelection("akka.tcp://SimpleRegression@127.0.0.1:2552/user/" + s"Worker-${i}")
+    workers(i) = worker;
+  }
   def receive = {
     case c: Calculation =>
-
       x = c.x
       y = c.y
-      workers = c.workers
       var cost = 0.0;
       sums = sums.map { x => x * 0 }
       for (j <- 0 to (c.x.size - 1)) {
         cost = GradientDecent.h(c.x(j), thetas)
-        c.workers(j).tell(Work(List(c.x(j)), List(c.y(j)), thetas), self);
+        workers(j).tell(Work(List(c.x(j)), List(c.y(j)), thetas), self);
       }
 
     //GradientDecent
@@ -53,12 +56,12 @@ class Master()
 
         }
 
-        self ! Calculation(workers, x, y, thetas)
+        self ! Calculation(x, y, thetas)
       }
 
     case _ =>
   }
 
 }
-case class Calculation(workers: Array[ActorRef], x: List[Vector[Double]], y: List[Double], thetas: Array[Double])
+case class Calculation(x: List[Vector[Double]], y: List[Double], thetas: Array[Double])
 case class Summation(sums: Array[Double])

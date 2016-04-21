@@ -10,9 +10,9 @@ class Worker extends Actor {
   
   var sums = new Array[Double](3)
   def receive = {
+    case "hello"=>
+      println("alive")
     case w : Work =>
-    
-   
       var cost = 0.0;
       sums=sums.map { x => x*0 }
       for (j <- 0 to (w.x.size - 1)) {

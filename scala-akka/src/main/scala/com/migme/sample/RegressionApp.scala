@@ -1,12 +1,18 @@
 package com.migme.sample
 
+import java.io.File
+
+import com.typesafe.config.ConfigFactory
+
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
 
 object RegressionApp {
-
-  val sys = ActorSystem("SimpleRegression")
+  val configFile = getClass.getClassLoader.
+    getResource("application.conf").getFile
+  val config = ConfigFactory.parseFile(new File(configFile))
+  val sys = ActorSystem("SimpleRegression", config)
   val manager = sys.actorOf(Props[Master], "master")
 
   val samples = List((Vector(0.0, 0.0), 2.0),
@@ -22,15 +28,12 @@ object RegressionApp {
 
   var thetas = new Array[Double](3)
   var sums = new Array[Double](3)
+
   def main(args: Array[String]) {
     for (i <- 0 to workers.size - 1) {
       workers(i) = sys.actorOf(Props[Worker], name = s"Worker-${i}")
     }
 
-    manager ! Calculation(workers, x, y, thetas);
-
-    Thread sleep 1000
-    sys.terminate()
-
-  }
+    manager ! Calculation(x, y, thetas);
+   }
 }
