@@ -16,7 +16,7 @@ object RegressionApp {
     getResource("local_application.conf").getFile
   val localConfig = ConfigFactory.parseFile(new File(localConfigFile))
   val remoteSys = ActorSystem("SimpleRegression", config)
-  val localSys = ActorSystem("LocalSystem",localConfig)
+  val localSys = ActorSystem("LocalSimpleRegression",localConfig)
   val manager = localSys.actorOf(Props[Master], "master")
 
   val samples = List((Vector(0.0, 0.0), 2.0),
