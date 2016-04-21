@@ -4,7 +4,7 @@ import scala.io.BufferedSource
 
 import akka.actor._
 
-case class Work(x: List[Vector[Double]],y:List[Double],thetas:Array[Double])
+
 class Worker extends Actor {
   
   

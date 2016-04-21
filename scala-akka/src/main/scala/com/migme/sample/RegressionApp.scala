@@ -12,8 +12,12 @@ object RegressionApp {
   val configFile = getClass.getClassLoader.
     getResource("application.conf").getFile
   val config = ConfigFactory.parseFile(new File(configFile))
-  val sys = ActorSystem("SimpleRegression", config)
-  val manager = sys.actorOf(Props[Master], "master")
+  val localConfigFile = getClass.getClassLoader.
+    getResource("local_application.conf").getFile
+  val localConfig = ConfigFactory.parseFile(new File(localConfigFile))
+  val remoteSys = ActorSystem("SimpleRegression", config)
+  val localSys = ActorSystem("LocalSystem",localConfig)
+  val manager = localSys.actorOf(Props[Master], "master")
 
   val samples = List((Vector(0.0, 0.0), 2.0),
     (Vector(3.0, 1.0), 12.0),
@@ -31,7 +35,7 @@ object RegressionApp {
 
   def main(args: Array[String]) {
     for (i <- 0 to workers.size - 1) {
-      workers(i) = sys.actorOf(Props[Worker], name = s"Worker-${i}")
+      workers(i) = remoteSys.actorOf(Props[Worker], name = s"Worker-${i}")
     }
 
     manager ! Calculation(x, y, thetas);

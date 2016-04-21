@@ -12,6 +12,9 @@ import akka.routing.RoundRobinPool
 import akka.actor.SupervisorStrategy
 import akka.actor.OneForOneStrategy
 import akka.actor.ActorSelection
+import akka.serialization.JSerializer
+import akka.remote.serialization.ProtobufSerializer
+import akka.serialization.JavaSerializer
 
 class Master()
     extends Actor {
@@ -63,5 +66,6 @@ class Master()
   }
 
 }
+case class Work(x: List[Vector[Double]],y:List[Double],thetas:Array[Double])
 case class Calculation(x: List[Vector[Double]], y: List[Double], thetas: Array[Double])
 case class Summation(sums: Array[Double])
